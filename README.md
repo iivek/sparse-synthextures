@@ -17,6 +17,16 @@ min \sum_{i,j} D[ **S1_{ij}****T****v_{i}**, **S2_{ij}****T****v_{j}**] ], where
 
 The objective function is minimized by multiplicative updates under which nonnegativity of the activation coefficients is preserved.
 
+## How to
+Run the scripts in the following order:
+1. extract_patches.m, which breaks down the input images into patches
+2. sparseNMF_uberscript.m, which trains sparse dictionaries by a variant of sparse NMF
+3. pattern_generation_uberscript, which does the smart stuff
+
+## Todo
+The implementation currently iterates through the set of patches, but the updates can be parallelized; patches which do not interact can be updated simultenaously.
+Wrap the code in a function. 
+
 If you have used this code in a publication, please mention this repository.
 
 ## License
