@@ -1,12 +1,14 @@
 # sparse-synthextures
 A technique for multispectral texture synthesis when sparse overcomplete dictionary of the texture is known. Proof of concept.
 
-Input texture sample  |  Synthesized texture
+<center>
+Input texture | Synthesized texture
 :-------------------------------------------------------:|:---------------------------------------------------------:
 ![Tea leaves texture sample](/out/tealeaves_original.jpg)  |  ![Reproduced tea leaves texture](/out/tealeaves.jpg)
 ![Cherries texture sample](/out/cherries_original.jpg)  |  ![Reproduced cherries texture](/out/cherries.jpg)
 ![Desert sand texture sample](/out/desert_original.jpg)  |  ![Reproduced desert sand texture](/out/desert.jpg)
 ![Input fingerprint texture sample](/out/fingerprint_original.jpg)  |  ![Reproduced fingerprint texture](/out/fingerprint.jpg)
+</center>
 
 Image texture is assumed to be composed of overlapping image patches where each of the patches is modeled as a linear superposition of a small number of underlying dictionary elements, but with an additional requirement - at the overlaps, we aim to minimize the difference between pixel values of the overlapping patches. Hope is that, next to small-scale traits of the texture captured by the sparse dictionary (used for e.g. image inpainting), this constraint will bring out large-scale texture traits which are needed to synthesize an entirely new, visually convincing texture with minimally prononunced blocky artifacts.
 
