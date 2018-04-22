@@ -1,14 +1,12 @@
 # sparse-synthextures
 A technique for multispectral texture synthesis when sparse overcomplete dictionary of the texture is known. Proof of concept.
 
-<center>
 Input texture | Synthesized texture
 :-------------------------------------------------------:|:---------------------------------------------------------:
 ![Tea leaves texture sample](/out/tealeaves_original.jpg)  |  ![Reproduced tea leaves texture](/out/tealeaves.jpg)
 ![Cherries texture sample](/out/cherries_original.jpg)  |  ![Reproduced cherries texture](/out/cherries.jpg)
 ![Desert sand texture sample](/out/desert_original.jpg)  |  ![Reproduced desert sand texture](/out/desert.jpg)
 ![Input fingerprint texture sample](/out/fingerprint_original.jpg)  |  ![Reproduced fingerprint texture](/out/fingerprint.jpg)
-</center>
 
 ## Problem formulation
 
