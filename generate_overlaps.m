@@ -1,6 +1,12 @@
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+% This file is part of the code available at
+% https://github.com/iivek/sparse-synthextures
+% which comes under GPL-3.0 license.
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 % % So here goes. From an overcomplete dictionary derived from image patches,
-% % I want to generate new patches, but an entire image with minimal blocky
-% % artifacts.
+% % I want to generate new patches, but an entire image without blocky
+% % artefacts.
 % 
 % % Convention. Entire image is divided into overlapping blocks. Indexing
 % % starts from top left to bottom left, then towards the right.
@@ -44,7 +50,7 @@
 %         0 1 0 0 0]
 % S1*T*v1 == S2*T*v2
 
-% %% What follows is okay and works but i'm commenting it
+% %% This is okay and works but i'm commenting it
 % % Now let's generate mapping suitable for image patches. For the convention
 % % of how patches are indexed and how the patches are vectorized see above.
 % patchSize = [16 16];    % height and width
@@ -77,7 +83,7 @@
 %     colCounter = colCounter + 1;
 % end
 
-% % Another specific way to create overlaps - it's best to visualize the templates to
+% % Another specific way to create overlaps - best draw the templates to
 % % understand what's happening here
 % % Now let's generate mapping suitable for image patches. For the convention
 % % of how patches are indexed and how the patches are vectorized see above.
@@ -138,16 +144,17 @@
 %% way3
 %  This pattern will rely more on inpainting and has less redundancy - less
 %  overlaps
-% patchSize = [16 16];    % height and width 
-numPatches = [2,3];
-repeatEvery = [8,8];  % Determines location of the patches which will compose the entire image. 
+
+patchSize = [16 16];    % height and width 
+numPatches = [15,15];
+repeatEvery = [12,12];  % Determines location of the patches which will compose the entire image. 
 colIdx = 1:repeatEvery(2):numPatches(2)*repeatEvery(2);
 rowIdx = 1:repeatEvery(1):numPatches(1)*repeatEvery(1);
 imageSize = [rowIdx(end)+patchSize(1)-1, colIdx(end)+patchSize(2)-1]
 templates = sparse(imageSize(1)*imageSize(2),numel(rowIdx)*numel(colIdx));
 templateInfo = zeros(2,2,numel(rowIdx)*numel(colIdx));
 
-% Specifying locations of seed patches, to be stored in 'toConsider'
+% % Specifying locations of seed patches, to be stored in 'toConsider'
 locationsBool = true(numel(rowIdx)*numel(colIdx),1);
 pattern = [1; 3; 5; 2; 4];
 seedCols = repmat(pattern, [ceil(numel(rowIdx)/numel(pattern)),1]);
@@ -296,7 +303,7 @@ end
 
 save overlaps
 
-% % Trying ot the mapping
+% % Trying out if mapping works as intended
 % v1 = [1,3,1,3,1,3,3]';
 % v2 = [0,1.1,0,1.2,0,0,1.3]';
 % % Let's say I want to measure divergence on locations 1,3,5
@@ -310,7 +317,7 @@ save overlaps
 % % 'S2*v2' now maps v2 to match indexing of v1.
 % % We can measure divergence between S1*v1 and S2*v2 - the required points
 % % are aligned and otherwhere there are zeros, so divergence will not be
-% % evaluated at these indeces.
+% % affected on those indeces.
 % 
 % 
 % %% Another test
@@ -331,4 +338,4 @@ save overlaps
 % S2 = zeros(5,5);
 % S2(sub2ind(size(S2),onetoone(:,1), onetoone(:,2))) = 1;
 % S2*T*v2
-% % Sweet. Now S1*T*v1 and S2*T*v2 can be matched.
+% % Sweet, indeed now S1*T*v1 and S2*T*v2 can be matched!

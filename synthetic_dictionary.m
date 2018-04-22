@@ -1,3 +1,9 @@
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+% This file is part of the code available at
+% https://github.com/iivek/sparse-synthextures
+% which comes under GPL-3.0 license.
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 %% Playing aroung with a small test dictionary, consisting of horizontal,
 %  vertical and diagonal elements
 template = cell(4,1);

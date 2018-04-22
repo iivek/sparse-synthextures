@@ -1,0 +1,1 @@
+poisson-image-reconstruction-from-gradients.pdf can be downloaded from http://web.media.mit.edu/~raskar/photo/code.pdf

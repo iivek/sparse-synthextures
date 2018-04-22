@@ -1,20 +1,18 @@
-%% The real deal
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+% This file is part of the code available at
+% https://github.com/iivek/sparse-synthextures
+% which comes under GPL-3.0 license.
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+%  TODO: the update rules can be paralelized
 %
 
-
-% % Dictionary, T - accross cols
-% load checkpoint_3000_iters
-generate_overlaps;
-
-% load init
-% 'loading presaved init file'
-
 % Algorithm parameters
-iterations = 1000;
+iterations = 5;
 epsilon = 1e-12;
 beta = 2;   % 2 is a must for now
 assert(beta==2, 'Has to be 2 - Euclidean distance.')
-lambda = 5; % sparsity penalization
+lambda = 1.0; % sparsity penalization
 
 % Parameters related to the dataset
 height = size(T,1);     % number of elements in a patch.
@@ -36,8 +34,8 @@ for loc = find(~toConsider)'
     seedPatches{loc} = randomPatch(:);  % take a random patch
 end
 
-% Initialization
-V = rand(factors,width);
+% Initialization. TODO: Robust and automatic initial values
+V = rand(factors,width)/20;
 
 % Not letting activations become larger than they are in the
 % original decomposition
@@ -90,16 +88,21 @@ for i=1:iterations
             positive = positive...
                 + beta.*T1'*(T1*v1);
         end
+        % l1/l2
         negative = negative + lambda.*v1.*norm(v1,1)./norm(v1,2).^3;
-%          sum(v1,1)./sqrt(sum(v1.^2,1)).^3 - norm(v1,1)./norm(v1,2).^3
-        positive = positive + lambda./norm(v1,2); 
+        positive = positive + lambda./norm(v1,2);
+        % l1/l2 ends
+%         l1-l2
+%         negative = negative + lambda.*v1./norm(v1,2);
+%         positive = positive + lambda;
+%         % l1-l2 ends
         numerator = negative; % + repmat(sum(v1.*positive,1),[factors,1]);
         denominator = positive; % + repmat(sum(v1.*negative,1), [factors,1]); 
         v1 = v1.*numerator./denominator;
-        notoverflow = v1<=activationLimits;
-%         v1(overflow) = activationLimits(overflow);
+        overflow = v1>activationLimits;
+        v1(overflow) = activationLimits(overflow);
 %         v1 = v1./repmat(sum(v1,1),[factors,1]);    % unit L1 norm accross cols
-        V(notoverflow,patch) = v1(notoverflow);
+        V(:,patch) = v1;
     end
     
     curr = 0;   % Accumulator for objective function
@@ -125,7 +128,8 @@ for i=1:iterations
                 + 1./(beta-1).*sum( (T1*v1-y).*((T1*v1).^(beta-1)-y.^(beta-1)) );       
         end
         divPart = divPart/2;  % dividing by two because for each pair symmetric divergence has been added twice
-        curr = curr + divPart + lambda*norm(v1,1)./norm(v1,2);
+        curr = curr + divPart + lambda*norm(v1,1)./norm(v1,2); % l1/l2
+        % curr = curr + divPart + lambda*(norm(v1,1)-norm(v1,2)); % l1-l2
     end    
     
     
@@ -182,13 +186,41 @@ for i=1:iterations
     drawnow
 end
 
+theWhole = zeros([imageSize, channels]);
+for patch = 1:size(templates,2)
+    theWhole(templateInfo(2,1,patch):templateInfo(2,1,patch)+patchSize(1)-1,...
+        templateInfo(2,2,patch):templateInfo(2,2,patch)+patchSize(2)-1,:) = ...
+        max(reshape(T*V(:,patch),[patchSize channels]),...
+            theWhole(templateInfo(2,1,patch):templateInfo(2,1,patch)+patchSize(1)-1,...
+            templateInfo(2,2,patch):templateInfo(2,2,patch)+patchSize(2)-1,:));
+end
+theWhole = (theWhole - min(theWhole(:))) ./ ( max(theWhole(:))-min(theWhole(:)) );
+   
 
-% theWhole = zeros(imageSize);
-% for patch = 1:size(templates,2)
-%     theWhole(templateInfo(2,1,patch):templateInfo(2,1,patch)+patchSize(1)-1,...
-%         templateInfo(2,2,patch):templateInfo(2,2,patch)+patchSize(2)-1) = ...
-%         reshape(T*V(:,patch),patchSize);
-% end
+% Cleaning up the gradients where the patches overlap using median
+% filtering
+img = theWhole;
+[H,W,C] = size(img); img = double(img); 
+gx = zeros(H,W,channels); gy = zeros(H,W,channels); j = 1:H-1; k = 1:W-1;
+gx(j,k,:) = (img(j,k+1,:) - img(j,k,:)); gy(j,k,:) = (img(j+1,k,:) - img(j,k,:));
+gluedAt = [repeatEvery(2):repeatEvery(2):size(gx,2), patchSize(2):repeatEvery(2):size(gx,2)];
+for i=1:channels
+    filtered(:,:,i) = medfilt2(gx(:,:,i),[3,3]);
+    gx(:,gluedAt,i) = filtered(:,gluedAt,i);
+end
+for i=1:channels
+    filtered(:,:,i) = medfilt2(gy(:,:,i),[3,3]);
+    gy(gluedAt,:,i) = filtered(gluedAt,:,i);
+end
+
+% Reconstruct image from gradients
+for i=1:channels
+    img_rec(:,:,i) = poisson_solver_function(gx(:,:,i),gy(:,:,i),img(:,:,i));
+end
+figure;imagesc(img);colormap gray;colorbar;title('Image')
+img_rec = (img_rec - min(img_rec(:))) ./ ( max(img_rec(:))-min(img_rec(:)) );
+figure;imagesc(img_rec);colormap gray;colorbar;title('Reconstructed');
+% figure;imagesc(abs(img_rec-img));colormap gray;colorbar;title('Abs error'); 
 
 
 

@@ -1,3 +1,14 @@
-# Ignore autosaves and .mat files
+# Windows default autosave extension
+*.asv
+
+# OSX / *nix default autosave extension
 *.m~
-*.mat
+
+# Compiled MEX binaries (all platforms)
+*.mex*
+
+# Simulink Code Generation
+slprj/
+
+# Mat files
+.mat

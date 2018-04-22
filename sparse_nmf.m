@@ -1,3 +1,9 @@
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+% This file is part of the code available at
+% https://github.com/iivek/sparse-synthextures
+% which comes under GPL-3.0 license.
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 %% Ad-hoc script which does nonnegative matrix factorization with sparsity
 %  regularization, to find the dictionary (in this case the left matrix,
 %  with dictionary elements organised as columns).
@@ -11,7 +17,6 @@
 
 
 % X is input matrix
-extract_patches;
 % X = (X - repmat(min(X,[],1),[size(X,1),1])) ./ ( repmat(max(X,[],1)-min(X,[],1),[size(X,1),1]) );
 X = (X - min(X(:))) ./ ( max(X(:))-min(X(:)) );
 
