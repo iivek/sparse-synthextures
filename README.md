@@ -3,7 +3,7 @@ A method for multispectral texture synthesis using sparse image modeling. Proof 
 
 Input texture | Synthesized texture
 :-------------------------------------------------------:|:---------------------------------------------------------:
-![Tea leaves texture sample](/out/tealeaves_original.jpg)  |  ![Reproduced tea leaves texture](/out/tealeaves.jpg)
+![Tea leaves texture sample](/out/tealeaves_original.jpg)  |  ![Reproduced tea leaves texture](/out/tealeaves_levels.jpg)
 ![Cherries texture sample](/out/cherries_original.jpg)  |  ![Reproduced cherries texture](/out/cherries.jpg)
 ![Desert sand texture sample](/out/desert_original.jpg)  |  ![Reproduced desert sand texture](/out/desert.jpg)
 ![Input fingerprint texture sample](/out/fingerprint_original.jpg)  |  ![Reproduced fingerprint texture](/out/fingerprint.jpg)
